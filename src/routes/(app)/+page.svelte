@@ -1,12 +1,17 @@
 <script lang="ts">
 	
 	import { onMount } from 'svelte/internal';
+
+	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
 	// DocShell
 
 	// Components
 	import { Avatar, CodeBlock, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 
+	export let data;
 
+	let { session, supabase, userName, condominium } = data;
+	$: ({ session, supabase, userName, condominium } = data)
 	// Types
 	interface Person {
 		id: number;
@@ -39,36 +44,9 @@
 			avatar: 48,
 			name: 'Asistente Gicondo',
 			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
-			message: "Buen día, {insertar nombre}. ",
+			message: `Buen día, ${userName}. Estoy aquí para responder sus dudas con respecto a la ${condominium}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`,
 			color: 'variant-soft-primary'
 		},
-		{
-			id: 1,
-			host: false,
-			avatar: 14,
-			name: 'Michael',
-			timestamp: 'Yesterday @ 2:45pm',
-			message: "bye",
-			color: 'variant-soft-primary'
-		},
-		{
-			id: 2,
-			host: true,
-			avatar: 48,
-			name: 'Jane',
-			timestamp: 'Yesterday @ 2:50pm',
-			message: "dou",
-			color: 'variant-soft-primary'
-		},
-		{
-			id: 3,
-			host: false,
-			avatar: 14,
-			name: 'Michael',
-			timestamp: 'Yesterday @ 2:52pm',
-			message: "great",
-			color: 'variant-soft-primary'
-		}
 	];
 	let currentMessage = '';
 
@@ -87,8 +65,8 @@
 			id: messageFeed.length,
 			host: true,
 			avatar: 48,
-			name: 'Jane',
-			timestamp: `Today @ ${getCurrentTimestamp()}`,
+			name: `${userName}`,
+			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
 			message: currentMessage,
 			color: 'variant-soft-primary'
 		};
@@ -106,7 +84,9 @@
 	function onPromptKeydown(event: KeyboardEvent): void {
 		if (['Enter'].includes(event.code)) {
 			event.preventDefault();
-			addMessage();
+			if(currentMessage.length !== 0){
+				addMessage();
+			}
 		}
 	}
 
@@ -126,12 +106,12 @@
 			</header>
 			<!-- List -->
 			<div class="p-4 space-y-4 overflow-y-auto">
-				<small class="opacity-50">Contacts</small>
+				<small class="opacity-50">Contactos</small>
 				<ListBox active="variant-filled-primary">
 					{#each people as person}
 						<ListBoxItem bind:group={currentPerson} name="people" value={person}>
 							<svelte:fragment slot="lead">
-								<Avatar initials={"A"} width="w-8" />
+								<Avatar src={samAvatar} initials={"A"} width="w-8" />
 							</svelte:fragment>
 							{person.name}
 						</ListBoxItem>
@@ -166,7 +146,7 @@
 								</header>
 								<p>{bubble.message}</p>
 							</div>
-							<Avatar src="https://i.pravatar.cc/?img={bubble.avatar}" width="w-12" />
+							<Avatar src={samAvatar} width="w-12" />
 						</div>
 					{/if}
 				{/each}
@@ -184,7 +164,7 @@
 						rows="1"
 						on:keydown={onPromptKeydown}
 					/>
-					<button class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage}>
+					<button class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0}>
 						<span class="material-icons">send</span>
 					</button>
 				</div>
