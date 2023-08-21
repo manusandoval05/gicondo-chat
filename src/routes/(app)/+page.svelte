@@ -1,6 +1,7 @@
 <script lang="ts">
 	
 	import { onMount } from 'svelte/internal';
+	import { enhance } from '$app/forms';
 
 	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
 	// DocShell
@@ -10,8 +11,10 @@
 
 	export let data;
 
-	let { session, supabase, userName, condominium } = data;
-	$: ({ session, supabase, userName, condominium } = data)
+	let { session, supabase, userName, lastName, condominium } = data;
+	$: ({ session, supabase, userName, lastName, condominium } = data);
+
+	let userInitials = userName[0] + lastName[0];
 	// Types
 	interface Person {
 		id: number;
@@ -27,6 +30,10 @@
 		message: string;
 		color: string;
 	}
+	interface ChatMessageFeed {
+		role: "user" | "assistant",
+		content: string
+	};
 
 	let elemChat: HTMLElement;
 
@@ -48,6 +55,14 @@
 			color: 'variant-soft-primary'
 		},
 	];
+
+	// GTP Messages
+	let messageGptFeed: ChatMessageFeed[] = [
+		{
+			role: "assistant",
+			content: `Buen día, ${userName}. Estoy aquí para responder sus dudas con respecto a la ${condominium}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`
+		}
+	]
 	let currentMessage = '';
 
 	// For some reason, eslint thinks ScrollBehavior is undefined...
@@ -60,7 +75,7 @@
 		return new Date().toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
 	}
 
-	function addMessage(): void {
+	async function addMessage() {
 		const newMessage = {
 			id: messageFeed.length,
 			host: true,
@@ -70,8 +85,41 @@
 			message: currentMessage,
 			color: 'variant-soft-primary'
 		};
+		const userMessage = {
+			role: "user",
+			content: currentMessage
+		} as const
 		// Update the message feed
 		messageFeed = [...messageFeed, newMessage];
+
+		// Update Chat  message feed 
+		messageGptFeed = [...messageGptFeed, userMessage ]
+
+		const response = await fetch("/api/post-message", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				messageFeed: messageGptFeed
+			})
+		})
+
+		const body = await response.json();
+	
+
+		console.log(body);
+
+		const assistantMessage = {
+			id: messageFeed.length,
+			host: false,
+			avatar: 48,
+			name: "Asistente Gicondo",
+			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
+			message: body.prompt,
+			color: "variant-soft-primary"
+		}
+		messageFeed = [...messageFeed, assistantMessage]
 		// Clear prompt
 		currentMessage = '';
 		// Smooth scroll to bottom
@@ -128,7 +176,7 @@
 				{#each messageFeed as bubble}
 					{#if bubble.host === true}
 						<div class="grid grid-cols-[auto_1fr] gap-2">
-							<Avatar src="https://i.pravatar.cc/?img={bubble.avatar}" width="w-12" />
+							<Avatar initials={userInitials} width="w-12" />
 							<div class="card p-4 variant-soft rounded-tl-none space-y-2">
 								<header class="flex justify-between items-center">
 									<p class="font-bold">{bubble.name}</p>
@@ -153,21 +201,23 @@
 			</section>
 			<!-- Prompt -->
 			<section class="border-t border-surface-500/30 p-4">
-				<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
-					<button class="input-group-shim">+</button>
-					<textarea
-						bind:value={currentMessage}
-						class="bg-transparent border-0 ring-0"
-						name="prompt"
-						id="prompt"
-						placeholder="Write a message..."
-						rows="1"
-						on:keydown={onPromptKeydown}
-					/>
-					<button class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0}>
-						<span class="material-icons">send</span>
-					</button>
-				</div>
+				<form action="?" method="post" use:enhance>
+					<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
+						<button class="input-group-shim">+</button>
+						<textarea
+							bind:value={currentMessage}
+							class="bg-transparent border-0 ring-0"
+							name="prompt"
+							id="prompt"
+							placeholder="Escribe un mensaje..."
+							rows="1"
+							on:keydown={onPromptKeydown}
+						/>
+						<button type="submit" class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0}>
+							<span class="material-icons">send</span>
+						</button>
+					</div>
+				</form>
 			</section>
 		</div>
 	</div>
