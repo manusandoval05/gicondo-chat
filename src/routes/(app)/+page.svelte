@@ -137,6 +137,9 @@
 			}
 		}
 	}
+	function autoGrow(event: Event ){
+		event.target.style.height = (event.target.scrollHeight) + "px";
+	}
 
 	// When DOM mounted, scroll to bottom
 	onMount(() => {
@@ -144,7 +147,7 @@
 	});
 </script>
 
-<section class="card">
+<section class="card h-full max-h-full">
 	<div class="chat w-full h-full grid grid-cols-1 lg:grid-cols-[30%_1fr]">
 		<!-- Navigation -->
 		<div class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
@@ -159,7 +162,7 @@
 					{#each people as person}
 						<ListBoxItem bind:group={currentPerson} name="people" value={person}>
 							<svelte:fragment slot="lead">
-								<Avatar src={samAvatar} initials={"A"} width="w-8" />
+								<Avatar src={samAvatar} initials={"AG"} width="w-8" />
 							</svelte:fragment>
 							{person.name}
 						</ListBoxItem>
@@ -170,7 +173,7 @@
 			<!-- <footer class="border-t border-surface-500/30 p-4">(footer)</footer> -->
 		</div>
 		<!-- Chat -->
-		<div class="grid grid-row-[1fr_auto]">
+		<div class="flex flex-col justify-between">
 			<!-- Conversation -->
 			<section bind:this={elemChat} class="max-h-[500px] p-4 overflow-y-auto space-y-4">
 				{#each messageFeed as bubble}
@@ -209,9 +212,10 @@
 							class="bg-transparent border-0 ring-0"
 							name="prompt"
 							id="prompt"
-							placeholder="Escribe un mensaje..."
+							placeholder="Escribe una pregunta..."
 							rows="1"
 							on:keydown={onPromptKeydown}
+							on:input={autoGrow}
 						/>
 						<button type="submit" class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0}>
 							<span class="material-icons">send</span>
@@ -222,3 +226,10 @@
 		</div>
 	</div>
 </section>
+
+<style>
+	#prompt {
+		resize: none;
+		max-height: 200px;
+	}
+</style>
