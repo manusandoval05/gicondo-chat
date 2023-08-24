@@ -1,5 +1,16 @@
 <script lang="ts">
 	export let form;
+	import { localStorageStore } from '@skeletonlabs/skeleton';
+	import type { Writable } from 'svelte/store';
+
+
+	const userInitialsStore: Writable<string> = localStorageStore('userInitials', '');
+	const userCondoStore: Writable<string> = localStorageStore('userCondo', '');
+	const userNameStore: Writable<string> = localStorageStore("userName", '');
+
+	userInitialsStore.set(""); 
+	userNameStore.set("");
+	userCondoStore.set("");
 </script>
 
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
