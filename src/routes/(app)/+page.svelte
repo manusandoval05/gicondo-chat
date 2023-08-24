@@ -131,7 +131,9 @@
 		setTimeout(() => {
 			scrollChatBottom('smooth');
 		}, 0);
-		 
+		
+		if(!response.body) return;
+		
 		for await(const chunk of response.body){
 			const decoder = new TextDecoder(); 
 			const parsedText = decoder.decode(chunk);
