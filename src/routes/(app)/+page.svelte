@@ -7,7 +7,7 @@
 	// DocShell
 
 	// Components
-	import { Avatar, CodeBlock, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
+	import { Avatar, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
 
 	export let data;
 
@@ -63,6 +63,8 @@
 			content: `Buen día, ${userName}. Estoy aquí para responder sus dudas con respecto a la ${condominium}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`
 		}
 	]
+
+	let canSendMessage = true;
 	let currentMessage = '';
 	let currentAssistantMessage = '';
 
@@ -122,7 +124,11 @@
 			color: "variant-soft-primary"
 		}
 
-		messageFeed = [...messageFeed, assistantMessageBubble]
+		messageFeed = [...messageFeed, assistantMessageBubble];
+
+		setTimeout(() => {
+			scrollChatBottom('smooth');
+		}, 0);
 		 
 		for await(const chunk of response.body){
 			const decoder = new TextDecoder(); 
@@ -134,7 +140,12 @@
 			messageFeed.pop();
 
 			messageFeed = [...messageFeed, assistantMessageBubble ];
+			setTimeout(() => {
+				scrollChatBottom('smooth');
+			}, 0);
 		}
+
+		canSendMessage = true; 
 	
 		/*
 		console.log(body);
@@ -161,12 +172,15 @@
 	function onPromptKeydown(event: KeyboardEvent): void {
 		if (['Enter'].includes(event.code)) {
 			event.preventDefault();
-			if(currentMessage.length !== 0){
+			if(currentMessage.length !== 0 && canSendMessage ){
 				addMessage();
 			}
 		}
 	}
 	function autoGrow(event: Event ){
+		if(!currentMessage){
+			event.target.rows = "1";
+		}
 		event.target.style.height = (event.target.scrollHeight) + "px";
 	}
 
@@ -236,7 +250,7 @@
 			<section class="border-t border-surface-500/30 p-4">
 				<form action="?" method="post" use:enhance>
 					<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
-						<button class="input-group-shim">+</button>
+						<span></span>
 						<textarea
 							bind:value={currentMessage}
 							class="bg-transparent border-0 ring-0"
@@ -247,7 +261,7 @@
 							on:keydown={onPromptKeydown}
 							on:input={autoGrow}
 						/>
-						<button type="submit" class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0}>
+						<button type="submit" class={currentMessage ? 'variant-filled-primary' : 'input-group-shim'} on:click={addMessage} disabled={currentMessage.length === 0 || !canSendMessage}>
 							<span class="material-icons">send</span>
 						</button>
 					</div>
