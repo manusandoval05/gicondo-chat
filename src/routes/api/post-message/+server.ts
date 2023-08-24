@@ -33,25 +33,21 @@ export async function POST ({ request, locals: {supabase, getSession}}){
     const UserInformation = await supabase.from("UserInformation").select("condominium");
     const condoId = UserInformation.data ? UserInformation.data[0].condominium : null;
 
-    console.log(UserInformation, condoId);
 
     const userQuestion = messages.at(-1);
-    console.log(userQuestion, messages);
 
     const embeddingResponse = await openai.embeddings.create({
         model: "text-embedding-ada-002",
         input: userQuestion ? userQuestion.content : ""
     });
     const embedding = embeddingResponse.data[0].embedding;
-    console.log(embedding);
+
     const { data } = await supabase.rpc("match_documents", {
         query_embedding: embedding,
         similarity_threshold: 0.6, 
         match_count: 2,
         condo_id: condoId
     });
-
-    console.log(data);
 
     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
@@ -78,7 +74,6 @@ export async function POST ({ request, locals: {supabase, getSession}}){
             controller.close();
         }
     });
-    console.log(responseStream);
     
     return new Response(
         responseStream,
