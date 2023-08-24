@@ -43,11 +43,11 @@ export async function POST ({ request, locals: {supabase, getSession}}){
         similarity_threshold: 0.6, 
         match_count: 2
     });
-    console.log(data);
 
     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         user: session.user.id,
+        stream: true,
         messages: [
             {
                 role: "system",
@@ -59,15 +59,26 @@ export async function POST ({ request, locals: {supabase, getSession}}){
                 content: `'''${data.map(embedding  => embedding.content).join(" ")}'''`
             }
         ]
+    }); 
+
+    const responseStream = new ReadableStream({
+        async start(controller){
+            for await (const part of completion){
+                controller.enqueue(part.choices[0]?.delta?.content || '');
+            }
+            controller.close();
+        }
     });
-
-    const chatResponse = completion.choices[0].message.content;
-
-    console.log(chatResponse);
-
-    return new Response(JSON.stringify({ 
-        prompt: completion.choices[0].message.content,
-    }));
+    console.log(responseStream);
+    
+    return new Response(
+        responseStream,
+        {
+            headers: {
+                'Content-Type': "text/event-stream", 
+            }
+        }
+    );
     
 }
 

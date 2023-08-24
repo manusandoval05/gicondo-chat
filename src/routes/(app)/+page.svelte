@@ -64,6 +64,7 @@
 		}
 	]
 	let currentMessage = '';
+	let currentAssistantMessage = '';
 
 	// For some reason, eslint thinks ScrollBehavior is undefined...
 	// eslint-disable-next-line no-undef
@@ -76,6 +77,7 @@
 	}
 
 	async function addMessage() {
+		currentAssistantMessage = "";
 		const newMessage = {
 			id: messageFeed.length,
 			host: true,
@@ -93,7 +95,9 @@
 		messageFeed = [...messageFeed, newMessage];
 
 		// Update Chat  message feed 
-		messageGptFeed = [...messageGptFeed, userMessage ]
+		messageGptFeed = [...messageGptFeed, userMessage ];
+
+		currentMessage = '';
 
 		const response = await fetch("/api/post-message", {
 			method: "POST",
@@ -105,9 +109,34 @@
 			})
 		})
 
-		const body = await response.json();
-	
+		console.log(response);
+		console.log(response.body);
 
+		let assistantMessageBubble = {
+			id: messageFeed.length,
+			host: false,
+			avatar: 48,
+			name: "Asistente Gicondo",
+			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
+			message: currentAssistantMessage,
+			color: "variant-soft-primary"
+		}
+
+		messageFeed = [...messageFeed, assistantMessageBubble]
+		 
+		for await(const chunk of response.body){
+			const decoder = new TextDecoder(); 
+			const parsedText = decoder.decode(chunk);
+
+			currentAssistantMessage += parsedText;
+
+			assistantMessageBubble.message = currentAssistantMessage;
+			messageFeed.pop();
+
+			messageFeed = [...messageFeed, assistantMessageBubble ];
+		}
+	
+		/*
 		console.log(body);
 
 		const assistantMessage = {
@@ -126,7 +155,7 @@
 		// Timeout prevents race condition
 		setTimeout(() => {
 			scrollChatBottom('smooth');
-		}, 0);
+		}, 0);*/
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
@@ -201,6 +230,7 @@
 						</div>
 					{/if}
 				{/each}
+				
 			</section>
 			<!-- Prompt -->
 			<section class="border-t border-surface-500/30 p-4">
