@@ -5,10 +5,20 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../../app.postcss';
-	import { AppShell, AppBar, Avatar, popup, storePopup } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, Avatar, popup, storePopup, localStorageStore } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
 	import type { PopupSettings } from '@skeletonlabs/skeleton';
+	import { onMount } from 'svelte';
+
+	import { get, type Writable } from 'svelte/store';
+
+	export let data;
+    $: ({ supabase, session} = data);
+
+	const userInitialsStore: Writable<string> = localStorageStore('userInitials', '');
+	const userCondoStore: Writable<string> = localStorageStore('userCondo', '');
+	const userNameStore: Writable<string> = localStorageStore("userName", '');
 
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
@@ -17,6 +27,25 @@
 		target: 'popupClickProfile',
 		placement: 'left'
 	};
+
+	async function getLocalInfo(){
+		if(get(userInitialsStore) && get(userCondoStore) && get(userNameStore)) return;
+
+		const { data, error } = await supabase.from("UserInformation").select("first_name, last_name, Condominiums(name)");
+		console.log(data);
+		const { first_name, last_name } = data ? data[0] : {first_name: "", last_name: ""};
+		const condoName = data ? data[0].Condominiums.name : "";
+
+		const userInitials = first_name[0] + last_name[0];
+
+		userInitialsStore.set(userInitials);
+		userCondoStore.set(condoName);
+		userNameStore.set(first_name);
+	}
+
+	onMount(async() => {
+		await getLocalInfo();
+	})
 </script>
 
 <svelte:head>
@@ -35,6 +64,7 @@
 			<svelte:fragment slot="trail">
 				<div use:popup={popupClickProfile}>
 					<Avatar 
+						initials={$userInitialsStore}
 						width="w-16"
 						border="border-4 border-surface-300-600-token hover:!border-primary-500"
 						cursor="cursor-pointer"

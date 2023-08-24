@@ -7,14 +7,19 @@
 	// DocShell
 
 	// Components
-	import { Avatar, ListBox, ListBoxItem } from '@skeletonlabs/skeleton';
+	import { Avatar, ListBox, ListBoxItem, localStorageStore } from '@skeletonlabs/skeleton';
+
+	import type { Writable } from 'svelte/store';
 
 	export let data;
 
-	let { session, supabase, userName, lastName, condominium } = data;
-	$: ({ session, supabase, userName, lastName, condominium } = data);
-
-	let userInitials = userName[0] + lastName[0];
+	
+	let { session, supabase } = data;
+	$: ({ session, supabase } = data);
+	
+	const userInitialsStore: Writable<string> = localStorageStore('userInitials', '');
+	const userCondoStore: Writable<string> = localStorageStore('userCondo', '');
+	const userNameStore: Writable<string> = localStorageStore("userName", '');
 
 	let inputPrompt: HTMLTextAreaElement;
 	// Types
@@ -53,7 +58,7 @@
 			avatar: 48,
 			name: 'Asistente Gicondo',
 			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
-			message: `Buen día, ${userName}. Estoy aquí para responder sus dudas con respecto a la ${condominium}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`,
+			message: `Buen día, ${$userNameStore}. Estoy aquí para responder sus dudas con respecto a la ${$userCondoStore}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`,
 			color: 'variant-soft-primary'
 		},
 	];
@@ -62,7 +67,7 @@
 	let messageGptFeed: ChatMessageFeed[] = [
 		{
 			role: "assistant",
-			content: `Buen día, ${userName}. Estoy aquí para responder sus dudas con respecto a la ${condominium}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`
+			content: `Buen día, ${$userNameStore}. Estoy aquí para responder sus dudas con respecto a la ${$userCondoStore}. Puedo resolver y cuestiones dudas relacionadas a la ley general de condominios, reglamentos, pagos, y otra información relevante de su condominio.`
 		}
 	]
 
@@ -86,7 +91,7 @@
 			id: messageFeed.length,
 			host: true,
 			avatar: 48,
-			name: `${userName}`,
+			name: `${$userNameStore}`,
 			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
 			message: currentMessage,
 			color: 'variant-soft-primary'
@@ -228,7 +233,7 @@
 				{#each messageFeed as bubble}
 					{#if bubble.host === true}
 						<div class="grid grid-cols-[auto_1fr] gap-2">
-							<Avatar initials={userInitials} width="w-12" />
+							<Avatar initials={$userInitialsStore} width="w-12" />
 							<div class="card p-4 variant-soft rounded-tl-none space-y-2">
 								<header class="flex justify-between items-center">
 									<p class="font-bold">{bubble.name}</p>
