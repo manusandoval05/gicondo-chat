@@ -15,6 +15,8 @@
 	$: ({ session, supabase, userName, lastName, condominium } = data);
 
 	let userInitials = userName[0] + lastName[0];
+
+	let inputPrompt: HTMLTextAreaElement;
 	// Types
 	interface Person {
 		id: number;
@@ -177,11 +179,13 @@
 			}
 		}
 	}
-	function autoGrow(event: Event ){
+	function autoGrow(){
+
 		if(!currentMessage){
-			event.target.rows = "1";
+			inputPrompt.rows = 1;
+			return;
 		}
-		event.target.style.height = (event.target.scrollHeight) + "px";
+		inputPrompt.style.height = (inputPrompt.scrollHeight) + "px";
 	}
 
 	// When DOM mounted, scroll to bottom
@@ -252,6 +256,7 @@
 					<div class="input-group input-group-divider grid-cols-[auto_1fr_auto] rounded-container-token">
 						<span></span>
 						<textarea
+							bind:this={inputPrompt}
 							bind:value={currentMessage}
 							class="bg-transparent border-0 ring-0"
 							name="prompt"
