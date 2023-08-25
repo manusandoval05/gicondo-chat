@@ -33,16 +33,17 @@
 	async function getLocalInfo(){
 		if(get(userInitialsStore) && get(userCondoStore) && get(userNameStore)) return;
 
-		const { data, error } = await supabase.from("UserInformation").select("first_name, last_name, Condominiums(name)");
+		const { data , error } = await supabase.from("UserInformation").select("first_name, last_name, Condominiums(name)");
 		console.log(data);
 		const { first_name, last_name } = data ? data[0] : {first_name: "", last_name: ""};
-		const condoName = data ? data[0].Condominiums.name : "";
+		const condoName = data ? data[0].Condominiums?.name : "";
 
-		const userInitials = first_name[0] + last_name[0];
+		const userInitials = (first_name ?? "") + (last_name ?? "");
+	
 
 		userInitialsStore.set(userInitials);
-		userCondoStore.set(condoName);
-		userNameStore.set(first_name);
+		userCondoStore.set(condoName ?? "");
+		userNameStore.set(first_name ?? "");
 	}
 
 	onMount(async() => {

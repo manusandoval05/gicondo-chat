@@ -118,9 +118,7 @@
 				messageFeed: messageGptFeed
 			})
 		})
-
-		console.log(response);
-		console.log(response.body);
+	
 
 		let assistantMessageBubble = {
 			id: messageFeed.length,
@@ -139,7 +137,7 @@
 		}, 0);
 		
 		if(!response.body) return;
-		
+
 		for await(const chunk of response.body){
 			const decoder = new TextDecoder(); 
 			const parsedText = decoder.decode(chunk);
@@ -157,26 +155,6 @@
 
 		canSendMessage = true; 
 	
-		/*
-		console.log(body);
-
-		const assistantMessage = {
-			id: messageFeed.length,
-			host: false,
-			avatar: 48,
-			name: "Asistente Gicondo",
-			timestamp: `Hoy @ ${getCurrentTimestamp()}`,
-			message: body.prompt,
-			color: "variant-soft-primary"
-		}
-		messageFeed = [...messageFeed, assistantMessage]
-		// Clear prompt
-		currentMessage = '';
-		// Smooth scroll to bottom
-		// Timeout prevents race condition
-		setTimeout(() => {
-			scrollChatBottom('smooth');
-		}, 0);*/
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
