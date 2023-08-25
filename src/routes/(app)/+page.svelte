@@ -4,6 +4,7 @@
 	import { enhance } from '$app/forms';
 
 	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
+	import vivookAvatar from "$lib/static/avatars/vivook_avatar.png";
 	// DocShell
 
 	// Components
@@ -25,7 +26,7 @@
 	// Types
 	interface Person {
 		id: number;
-		avatar: number;
+		avatar: string;
 		name: string;
 	}
 	interface MessageFeed {
@@ -46,7 +47,7 @@
 
 	// Navigation List
 	const people: Person[] = [
-		{ id: 0, avatar: 14, name: 'Asistente Gicondo' },
+		{ id: 0, avatar: samAvatar, name: 'Asistente Gicondo'}
 	];
 	let currentPerson: Person = people[0];
 
@@ -206,22 +207,31 @@
 		<!-- Navigation -->
 		<div class="hidden lg:grid grid-rows-[auto_1fr_auto] border-r border-surface-500/30">
 			<!-- Header -->
-			<header class="border-b border-surface-500/30 p-4">
-				<input class="input" type="search" placeholder="Search..." />
-			</header>
 			<!-- List -->
 			<div class="p-4 space-y-4 overflow-y-auto">
-				<small class="opacity-50">Contactos</small>
+				<small class="opacity-50">Nuestros servicios</small>
 				<ListBox active="variant-filled-primary">
 					{#each people as person}
 						<ListBoxItem bind:group={currentPerson} name="people" value={person}>
 							<svelte:fragment slot="lead">
-								<Avatar src={samAvatar} initials={"AG"} width="w-8" />
+								<Avatar src={person.avatar} initials={"AG"} width="w-8" />
 							</svelte:fragment>
 							{person.name}
 						</ListBoxItem>
 					{/each}
 				</ListBox>
+				<nav class="list-nav">
+					<!-- (optionally you can provide a label here) -->
+					<ul>
+						<li>
+							<a href="https://webapp.vivook.com/Login.php">
+								<span class=""><Avatar src={vivookAvatar} width="w-8"/></span>
+								<span class="flex-auto">Vivook</span>
+							</a>
+						</li>
+						<!-- ... -->
+					</ul>
+				</nav>
 			</div>
 			<!-- Footer -->
 			<!-- <footer class="border-t border-surface-500/30 p-4">(footer)</footer> -->
@@ -229,7 +239,7 @@
 		<!-- Chat -->
 		<div class="flex flex-col justify-between">
 			<!-- Conversation -->
-			<section bind:this={elemChat} class="max-h-[500px] p-4 overflow-y-auto space-y-4">
+			<section bind:this={elemChat} style="max-height: calc(100vh - 171px);" class="p-4 overflow-y-auto space-y-4">
 				{#each messageFeed as bubble}
 					{#if bubble.host === true}
 						<div class="grid grid-cols-[auto_1fr] gap-2">
