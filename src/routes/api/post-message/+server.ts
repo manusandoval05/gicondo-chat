@@ -61,7 +61,7 @@ export async function POST ({ request, locals: {supabase, getSession}}){
             ...messages,
             {
                 role: "user",
-                content: `'''${data.map(embedding  => embedding.content).join(" ")}'''`
+                content: `'''${data.map((embedding: { content: any; })  => embedding.content).join(" ")}'''`
             }
         ]
     }); 
