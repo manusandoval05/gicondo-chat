@@ -36,9 +36,10 @@
 		const { data , error } = await supabase.from("UserInformation").select("first_name, last_name, Condominiums(name)");
 		console.log(data);
 		const { first_name, last_name } = data ? data[0] : {first_name: "", last_name: ""};
+
 		const condoName = data ? data[0].Condominiums?.name : "";
 
-		const userInitials = (first_name ?? "") + (last_name ?? "");
+		const userInitials = (first_name?.at(0) ?? "") + (last_name?.at(0) ?? "");
 	
 
 		userInitialsStore.set(userInitials);
