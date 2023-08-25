@@ -8,6 +8,10 @@
 	import { AppShell} from '@skeletonlabs/skeleton';
 </script>
 
+<svelte:head>
+	<!-- Material Icons -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+</svelte:head>
 <!-- App Shell -->
 <AppShell>
 	<!-- Page Route Content -->
