@@ -1,6 +1,7 @@
 <script lang="ts">
 	export let form;
 	import { localStorageStore } from '@skeletonlabs/skeleton';
+	import gicondoLogo from "$lib/static/logos/gicondo_logo.svg";
 	import type { Writable } from 'svelte/store';
 
 
@@ -16,9 +17,9 @@
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 	<div class="sm:mx-auto sm:w-full sm:max-w-sm">
 		<img
-			class="mx-auto h-10 w-auto"
-			src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-			alt="Your Company"
+			class="mx-auto h-16 w-auto"
+			src={gicondoLogo}
+			alt="Logo de Gicondo"
 		/>
 		<h2 class="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
 			Iniciar sesión con su cuenta

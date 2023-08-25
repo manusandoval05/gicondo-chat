@@ -224,7 +224,7 @@
 					<!-- (optionally you can provide a label here) -->
 					<ul>
 						<li>
-							<a href="https://webapp.vivook.com/Login.php">
+							<a href="https://webapp.vivook.com/Login.php" target="_blank" rel="noopener">
 								<span class=""><Avatar src={vivookAvatar} width="w-8"/></span>
 								<span class="flex-auto">Vivook</span>
 							</a>

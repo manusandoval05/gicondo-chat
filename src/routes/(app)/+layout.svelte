@@ -5,6 +5,8 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../../app.postcss';
+	import gicondoLogo from "$lib/static/logos/gicondo_logo.svg";
+
 	import { AppShell, AppBar, Avatar, popup, storePopup, localStorageStore } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 
@@ -59,7 +61,7 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">Gicondo</strong>
+				<img class="h-12" src={gicondoLogo} alt="Logo de Gicondo">
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
 				<div use:popup={popupClickProfile}>
