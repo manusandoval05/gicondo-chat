@@ -107,5 +107,6 @@
 		"track",
 		"width",
 		"zIndex"
-	]
+	],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }
