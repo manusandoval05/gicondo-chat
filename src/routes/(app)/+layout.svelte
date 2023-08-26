@@ -6,6 +6,7 @@
 	// Most of your app wide CSS should be put in this file
 	import '../../app.postcss';
 	import gicondoLogo from "$lib/static/logos/gicondo_logo.svg";
+	import favicon from "$lib/static/logos/favicon.png";
 
 	import { AppShell, AppBar, Avatar, popup, storePopup, localStorageStore } from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
@@ -54,6 +55,7 @@
 
 <svelte:head>
 	<!-- Material Icons -->
+	<link rel="icon" href={favicon} />
 	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
 </svelte:head>
 
