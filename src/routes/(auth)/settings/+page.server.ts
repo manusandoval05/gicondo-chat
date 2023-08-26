@@ -20,7 +20,7 @@ export const actions = {
 
         if(!session) throw redirect(303, "/auth/login");
 
-        const queryObject = { user_id: session?.user.id, ...formObject};
+        const queryObject = { user_id: session?.user.id, ...formObject, user_type: 1};
 
         const serviceSupabase = createClient(
             PUBLIC_LOCAL_SUPABASE_URL,

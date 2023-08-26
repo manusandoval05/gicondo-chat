@@ -10,11 +10,3 @@ export const load: PageServerLoad = async({ url, locals: { getSession, supabase 
 
     if(!data || data.length === 0) throw redirect(303, "/settings");
 }
-
-export const actions = {
-    default: async({ request }) => {
-        const formData = await request.formData();
-
-        console.log(formData)
-    }
-}
