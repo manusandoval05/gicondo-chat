@@ -56,8 +56,8 @@
 				>
 				<div class="mt-2">
 					<input
-						id="confirm-password"
-						name="email"
+						id="confirm_password"
+						name="confirm_password"
 						value={form ? form?.email : ''}
 						type="password"
 						required

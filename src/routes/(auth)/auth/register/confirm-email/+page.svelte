@@ -1,0 +1,1 @@
+<h1>Un correo se ha enviado a su dirección de correo para confirmar su cuenta</h1>

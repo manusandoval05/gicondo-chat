@@ -27,7 +27,7 @@
 	</div>
 
 	<div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-		<form class="space-y-6" action="#" method="POST">
+		<form class="space-y-6" action="?/login" method="POST">
 			<div>
 				<label for="email" class="block text-sm font-medium leading-6 text-gray-900"
 					>Correo electrónico</label
@@ -77,12 +77,14 @@
 				>
 			</div>
 		</form>
-
 		<p class="mt-10 text-center text-sm text-gray-500">
 			¿Aún sin cuenta?
 			<a href="/auth/register" class="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
 				>Registrese aquí</a
 			>
 		</p>
+		<form class="flex justify-center mt-6" action="" method="post">
+			<button class="btn variant-filled-secondary" formaction="?/social_login&provider=google">Iniciar sesión con Google</button>
+		</form>
 	</div>
 </div>

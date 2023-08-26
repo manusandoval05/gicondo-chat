@@ -1,7 +1,11 @@
-import { redirect } from '@sveltejs/kit';
+import type { Provider } from '@supabase/supabase-js';
+import { fail, redirect } from '@sveltejs/kit';
 
+export const load = async({ request, locals: { getSession, supabase} }) => {
+
+}
 export const actions = {
-    default: async({ request, locals: { getSession, supabase} }) => {
+    login: async({ request, locals: { getSession, supabase} }) => {
         const formData = await request.formData();
 
         const email = formData.get("email")?.toString();
@@ -32,5 +36,19 @@ export const actions = {
             password: password,
             message: "Invalid login credentials"
         }
+    },
+    social_login: async({ locals: { supabase }, url }) => {
+        const provider = url.searchParams.get("provider") as Provider;
+
+        if(!provider) return {
+            provider: false
+        }
+    
+        const { data, error } = await supabase.auth.signInWithOAuth({ provider: provider });
+        if(error) return fail(400, {
+            message: "Algo salió mal"
+        });
+
+        throw redirect(303, data.url);
     }
 }
