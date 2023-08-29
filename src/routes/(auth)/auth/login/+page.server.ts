@@ -1,9 +1,7 @@
 import type { Provider } from '@supabase/supabase-js';
 import { fail, redirect } from '@sveltejs/kit';
 
-export const load = async({ request, locals: { getSession, supabase} }) => {
 
-}
 export const actions = {
     login: async({ request, locals: { getSession, supabase} }) => {
         const formData = await request.formData();
@@ -44,7 +42,12 @@ export const actions = {
             provider: false
         }
     
-        const { data, error } = await supabase.auth.signInWithOAuth({ provider: provider });
+        const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: provider,
+            options: {
+                redirectTo: `${url.origin}/auth/callback`,
+            }
+        });
         if(error) return fail(400, {
             message: "Algo salió mal"
         });
