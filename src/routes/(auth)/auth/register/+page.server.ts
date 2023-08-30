@@ -5,8 +5,6 @@ export const actions = {
 
         const formData = Object.fromEntries(await request.formData());
 
-        console.log(formData);
-
         if (formData.password !== formData.confirm_password ) return { email: formData.email, passwords_match: false }
 
         const { data, error } = await supabase.auth.signUp({
