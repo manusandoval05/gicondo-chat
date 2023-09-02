@@ -49,7 +49,7 @@ export async function POST ({ request, locals: {supabase, getSession}}){
         condo_id: condoId
     });
 
-    const completion = await openai.chat.completions.create({
+/*     const completion = await openai.chat.completions.create({
         model: "gpt-3.5-turbo",
         user: session.user.id,
         stream: true,
@@ -64,19 +64,37 @@ export async function POST ({ request, locals: {supabase, getSession}}){
                 content: `'''${data.map((embedding: { content: any; })  => embedding.content).join(" ")}'''`
             }
         ]
-    }); 
+    });  */
+    const completion = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json" ,
+            Authorization: `Bearer ${PRIVATE_OPENAI_KEY}`
+        },
+        body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            user: session.user.id,
+            stream: true,
+            messages: [
+                {
+                    role: "system",
+                    content: "Eres un asistente que contesta preguntas sobre un condominio en específico ubicado en el Estado de México, y por tanto está apegado a la ley general de condominios. El usuario le va a proporcionar un fragmento de texto en forma de 'pregunta-respuesta' entre 3 comillas simples. Con ayuda de este fragmento contesta la pregunta del usuario sobre el condominio. Si la pregunta del usuario no está relacionada con condominios, contesta 'No puedo contestar eso'. Sé lo más conciso posible y evita decir frases como 'según el fragmento'"
+                },
+                ...messages,
+                {
+                    role: "user",
+                    content: `'''${data.map((embedding: { content: any; })  => embedding.content).join(" ")}'''`
+                }
+            ]
+        })
+    })
 
-    const responseStream = new ReadableStream({
-        async start(controller){
-            for await (const part of completion){
-                controller.enqueue(part.choices[0]?.delta?.content || '');
-            }
-            controller.close();
-        }
-    });
+    let { readable, writable } = new TransformStream();
+
+    completion.body?.pipeTo(writable);
     
     return new Response(
-        responseStream,
+        readable,
         {
             headers: {
                 'Content-Type': "text/event-stream", 
