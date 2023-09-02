@@ -144,32 +144,18 @@
 			const decoder = new TextDecoder(); 
 			const parsedText = decoder.decode(chunk);
 			
-			if(firstMessage){
-				const separatedJson = parsedText.split('\n');
-				separatedJson.forEach(content => {
-					const jsonText = content.replace("data", '"data"');
-					const parsedChunk = JSON.parse(`{${jsonText}}`);
-					console.log(parsedChunk);
-					currentAssistantMessage += parsedChunk.data.choices[0].delta.content;
+			const regex = /"content"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
 
-					assistantMessageBubble.message = currentAssistantMessage;
-					messageFeed.pop();
-
-					messageFeed = [...messageFeed, assistantMessageBubble ];
-					setTimeout(() => {
-						scrollChatBottom('smooth');
-					}, 0);
-					
-				})
-				firstMessage = true;
-				continue;
+			let matches = [];
+			let match;
+			
+			while ((match = regex.exec(parsedText))) {
+			  console.log(match);
+			  const contentValue = match[1].replace(/\\"/g, '"');
+			  matches.push(contentValue);
 			}
-			const jsonText = parsedText.replace("data", '"data"');
 
-			const parsedChunk = JSON.parse(`{${jsonText}}`);
-			console.log(parsedChunk);
-
-			currentAssistantMessage += parsedChunk.data.choices[0].delta.content;
+			currentAssistantMessage += matches.join("");
 
 			assistantMessageBubble.message = currentAssistantMessage;
 			messageFeed.pop();
