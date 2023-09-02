@@ -11,6 +11,7 @@
 	import { Avatar, ListBox, ListBoxItem, localStorageStore } from '@skeletonlabs/skeleton';
 
 	import type { Writable } from 'svelte/store';
+	import { json } from '@sveltejs/kit';
 
 	export let data;
 
@@ -138,11 +139,37 @@
 		
 		if(!response.body) return;
 
+		let firstMessage = false;
 		for await(const chunk of response.body){
 			const decoder = new TextDecoder(); 
 			const parsedText = decoder.decode(chunk);
+			
+			if(firstMessage){
+				const separatedJson = parsedText.split('\n');
+				separatedJson.forEach(content => {
+					const jsonText = content.replace("data", '"data"');
+					const parsedChunk = JSON.parse(`{${jsonText}}`);
+					console.log(parsedChunk);
+					currentAssistantMessage += parsedChunk.data.choices[0].delta.content;
 
-			currentAssistantMessage += parsedText;
+					assistantMessageBubble.message = currentAssistantMessage;
+					messageFeed.pop();
+
+					messageFeed = [...messageFeed, assistantMessageBubble ];
+					setTimeout(() => {
+						scrollChatBottom('smooth');
+					}, 0);
+					
+				})
+				firstMessage = true;
+				continue;
+			}
+			const jsonText = parsedText.replace("data", '"data"');
+
+			const parsedChunk = JSON.parse(`{${jsonText}}`);
+			console.log(parsedChunk);
+
+			currentAssistantMessage += parsedChunk.data.choices[0].delta.content;
 
 			assistantMessageBubble.message = currentAssistantMessage;
 			messageFeed.pop();
