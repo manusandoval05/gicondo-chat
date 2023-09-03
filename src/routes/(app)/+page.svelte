@@ -5,8 +5,9 @@
 
 	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
 	import vivookAvatar from "$lib/static/avatars/vivook_avatar.png";
-	// DocShell
 
+	import { createClient } from '@supabase/supabase-js';
+	// DocShell
 	// Components
 	import { Avatar, ListBox, ListBoxItem, localStorageStore } from '@skeletonlabs/skeleton';
 
@@ -14,8 +15,6 @@
 	import { json } from '@sveltejs/kit';
 
 	export let data;
-
-	
 	let { session, supabase } = data;
 	$: ({ session, supabase } = data);
 	
@@ -139,7 +138,6 @@
 		
 		if(!response.body) return;
 
-		let firstMessage = false;
 		for await(const chunk of response.body){
 			const decoder = new TextDecoder(); 
 			const parsedText = decoder.decode(chunk);
