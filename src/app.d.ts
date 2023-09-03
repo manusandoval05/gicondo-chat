@@ -10,7 +10,8 @@ declare global {
       getSession(): Promise<Session | null>
     }
     interface PageData {
-      session: Session | null
+      session: Session | null,
+      condo_id: number | null,
     }
     // interface Error {}
     // interface Platform {}

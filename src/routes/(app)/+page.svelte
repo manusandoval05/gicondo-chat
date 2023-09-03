@@ -5,18 +5,17 @@
 
 	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
 	import vivookAvatar from "$lib/static/avatars/vivook_avatar.png";
-
-	import { createClient } from '@supabase/supabase-js';
+	
+	import { PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	// DocShell
 	// Components
 	import { Avatar, ListBox, ListBoxItem, localStorageStore } from '@skeletonlabs/skeleton';
 
 	import type { Writable } from 'svelte/store';
-	import { json } from '@sveltejs/kit';
 
 	export let data;
-	let { session, supabase } = data;
-	$: ({ session, supabase } = data);
+	let { session, supabase, condo_id } = data;
+	$: ({ session, supabase, condo_id} = data);
 	
 	const userInitialsStore: Writable<string> = localStorageStore('userInitials', '');
 	const userCondoStore: Writable<string> = localStorageStore('userCondo', '');
@@ -109,15 +108,18 @@
 
 		currentMessage = '';
 
-		const response = await fetch("/api/post-message", {
+		const response = await fetch("https://htxxmgiojpvqhunicmdq.supabase.co/functions/v1/post-message", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				"Authorization": `Bearer ${PUBLIC_SUPABASE_ANON_KEY}`
 			},
 			body: JSON.stringify({
-				messageFeed: messageGptFeed
+				messageFeed: messageGptFeed, 
+				condo_id: condo_id
 			})
 		})
+		console.log(response);
 	
 
 		let assistantMessageBubble = {
@@ -148,7 +150,6 @@
 			let match;
 			
 			while ((match = regex.exec(parsedText))) {
-			  console.log(match);
 			  const contentValue = match[1].replace(/\\"/g, '"');
 			  matches.push(contentValue);
 			}

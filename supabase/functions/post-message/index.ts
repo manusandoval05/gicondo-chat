@@ -17,12 +17,15 @@ serve(async (req: Request) => {
 
 		const userQuestion = messages.at(-1);
 
+		/* // Supabase API URL - env var exported by default.
+		Deno.env.get('SUPABASE_URL') ?? '',
+		// Supabase API ANON KEY - env var exported by default.
+		Deno.env.get('SUPABASE_ANON_KEY') ?? '' 
+		${Deno.env.get('PRIVATE_OPENAI_KEY')}*/
 		// Create a Supabase client with the Auth context of the logged in user.
 		const supabaseClient = createClient(
-			// Supabase API URL - env var exported by default.
 			Deno.env.get('SUPABASE_URL') ?? '',
-			// Supabase API ANON KEY - env var exported by default.
-			Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+			Deno.env.get('SUPABASE_ANON_KEY') ?? '',
 			// Create client with Auth context of the user that called the function.
 			// This way your row-level-security (RLS) policies are applied.
 			//{ global: { headers: { Authorization: req.headers.get('Authorization')! } } }
@@ -37,10 +40,11 @@ serve(async (req: Request) => {
 			},
 			body: JSON.stringify({
 				model: 'text-embedding-ada-002',
-				input: userQuestion
+				input: userQuestion.content
 			})
 		});
 		const embeddingJson = await embeddingResponse.json();
+
 
 		const embedding = embeddingJson.data[0].embedding;
 
@@ -50,6 +54,7 @@ serve(async (req: Request) => {
 			match_count: 2,
 			condo_id: condo_id
 		});
+		console.log(data, error);
 		if (error) throw error;
 
 		const completion = await fetch('https://api.openai.com/v1/chat/completions', {
