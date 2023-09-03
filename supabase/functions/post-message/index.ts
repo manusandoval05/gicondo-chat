@@ -58,7 +58,6 @@ serve(async (req: Request) => {
 			match_count: 2,
 			condo_id: condo_id
 		});
-		console.log(data, error);
 		if (error) throw error;
 
 		const completion = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -86,6 +85,7 @@ serve(async (req: Request) => {
 				]
 			})
 		});
+		console.log(completion);
 		return new Response(completion.body, {
 			headers: { ...corsHeaders, 'Content-Type': 'text/stream' },
 			status: 200

@@ -107,6 +107,14 @@
 		messageGptFeed = [...messageGptFeed, userMessage ];
 
 		currentMessage = '';
+		/* const { data, error } = await supabase.functions.invoke("post-message", {
+			body: JSON.stringify({
+				messageFeed: messageGptFeed, 
+				condo_id: condo_id
+			}),
+		});
+
+		console.log(data); */
 
 		const response = await fetch("https://htxxmgiojpvqhunicmdq.supabase.co/functions/v1/post-message", {
 			method: "POST",
