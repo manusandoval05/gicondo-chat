@@ -149,16 +149,21 @@
 		
 		if(!response.body) return;
 
-		for await(const chunk of response.body){
-			const decoder = new TextDecoder(); 
-			const parsedText = decoder.decode(chunk);
-			
-			const regex = /"content"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+		const reader = response.body.getReader();
+
+		while(true){
+			const { done, value } = await reader.read(); 
+
+			if(done) break;
+
+			const chunkText = new TextDecoder().decode(value);
 
 			let matches = [];
 			let match;
 			
-			while ((match = regex.exec(parsedText))) {
+			const regex = /"content"\s*:\s*"((?:[^"\\]|\\.)*)"/g;
+
+			while ((match = regex.exec(chunkText))) {
 			  const contentValue = match[1].replace(/\\"/g, '"');
 			  matches.push(contentValue);
 			}
@@ -173,9 +178,7 @@
 				scrollChatBottom('smooth');
 			}, 0);
 		}
-
-		canSendMessage = true; 
-	
+		canSendMessage = true; 	
 	}
 
 	function onPromptKeydown(event: KeyboardEvent): void {
