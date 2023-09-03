@@ -5,7 +5,7 @@
 
 	import samAvatar from "$lib/static/avatars/sam_avatar.svg";
 	import vivookAvatar from "$lib/static/avatars/vivook_avatar.png";
-	
+
 	import { PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	// DocShell
 	// Components
@@ -114,6 +114,7 @@
 				"Content-Type": "application/json",
 				"Authorization": `Bearer ${PUBLIC_SUPABASE_ANON_KEY}`
 			},
+			mode: "cors",
 			body: JSON.stringify({
 				messageFeed: messageGptFeed, 
 				condo_id: condo_id
